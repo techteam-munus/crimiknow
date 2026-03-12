@@ -1,89 +1,113 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { CrimiKnowLogo, MunusLogo, CdAsiaLogo } from '@/components/ui/crimiknow-logo'
-import { Check, MessageSquare, Shield, Clock, BookOpen, Scale, GraduationCap, Building2, ExternalLink, Sparkles, Search, ArrowRight } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import Link from "next/link";
+import Image from "next/image";
+import {
+  CrimiKnowLogo,
+  MunusLogo,
+  CdAsiaLogo,
+} from "@/components/ui/crimiknow-logo";
+import {
+  Check,
+  MessageSquare,
+  Shield,
+  Clock,
+  BookOpen,
+  Scale,
+  GraduationCap,
+  Building2,
+  ExternalLink,
+  Sparkles,
+  Search,
+  ArrowRight,
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
 const features = [
   {
     icon: MessageSquare,
-    title: 'Instant Answers',
-    description: 'Get immediate responses to your questions about the Revised Penal Code and special penal laws.'
+    title: "Instant Answers",
+    description:
+      "Get immediate responses to your questions about the Revised Penal Code and special penal laws.",
   },
   {
     icon: BookOpen,
-    title: 'Comprehensive Coverage',
-    description: 'Access knowledge about criminal procedures, jurisprudence, and Philippine legal principles.'
+    title: "Comprehensive Coverage",
+    description:
+      "Access knowledge about criminal procedures, jurisprudence, and Philippine legal principles.",
   },
   {
     icon: Shield,
-    title: 'Reliable Sources',
-    description: 'Powered by AI with datasets curated and maintained by CD Asia, a trusted Philippine legal publisher.'
+    title: "Reliable Sources",
+    description:
+      "Powered by AI with datasets curated and maintained by CD Asia, a trusted Philippine legal publisher.",
   },
   {
     icon: Clock,
-    title: 'Available 24/7',
-    description: 'Get help anytime you need it, whether studying for the bar or researching a case.'
+    title: "Available 24/7",
+    description:
+      "Get help anytime you need it, whether studying for the bar or researching a case.",
   },
-]
+];
 
 const audiences = [
   {
     icon: GraduationCap,
-    title: 'Law Students & Professors',
-    description: 'Prepare for bar exams and coursework with instant access to criminal law materials.'
+    title: "Law Students & Professors",
+    description:
+      "Prepare for bar exams and coursework with instant access to criminal law materials.",
   },
   {
     icon: Scale,
-    title: 'Legal Practitioners',
-    description: 'Research jurisprudence, penalties, and procedures for cases faster than ever.'
+    title: "Legal Practitioners",
+    description:
+      "Research jurisprudence, penalties, and procedures for cases faster than ever.",
   },
   {
     icon: Building2,
-    title: 'LGUs & Law Enforcement',
-    description: 'Navigate criminal law provisions for local governance and enforcement operations.'
+    title: "LGUs & Law Enforcement",
+    description:
+      "Navigate criminal law provisions for local governance and enforcement operations.",
   },
-]
+];
 
 const suggestions = [
-  'Elements of Murder',
-  'Revised Penal Code Art. 248',
-  'Mitigating Circumstances',
-]
+  "Elements of Murder",
+  "Revised Penal Code Art. 248",
+  "Mitigating Circumstances",
+];
 
 const ctaMap: Record<string, string> = {
-  free: 'Start Free',
-  basic: 'Get Basic',
-  professional: 'Get Professional',
-  unlimited: 'Get Unlimited',
-}
+  free: "Start Free",
+  basic: "Get Basic",
+  professional: "Get Professional",
+  unlimited: "Get Unlimited",
+};
 
-const popularTier = 'professional'
+const popularTier = "professional";
 
 export default async function LandingPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const { data: tiers } = await supabase
-    .from('subscription_tiers')
-    .select('*')
-    .eq('is_active', true)
-    .order('price_monthly', { ascending: true })
+    .from("subscription_tiers")
+    .select("*")
+    .eq("is_active", true)
+    .order("price_monthly", { ascending: true });
 
   const pricingPlans = (tiers || []).map((tier) => {
-    const tierKey = tier.name.toLowerCase()
-    const isFree = tier.price_monthly === 0
+    const tierKey = tier.name.toLowerCase();
+    const isFree = tier.price_monthly === 0;
     return {
       name: tier.name,
       price: tier.price_monthly.toLocaleString(),
-      duration: '/month',
-      description: tier.description || '',
+      duration: "/month",
+      description: tier.description || "",
       features: tier.features || [],
       cta: ctaMap[tierKey] || `Get ${tier.name}`,
       popular: tierKey === popularTier,
       href: isFree
-        ? '/auth/sign-up?plan=free'
+        ? "/auth/sign-up?plan=free"
         : `/auth/sign-up?plan=${tierKey}&redirect=payment`,
-    }
-  })
+    };
+  });
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -92,18 +116,18 @@ export default async function LandingPage() {
           <CrimiKnowLogo size="sm" variant="light" className="md:hidden" />
           <CrimiKnowLogo size="md" variant="light" className="hidden md:flex" />
           <nav className="flex items-center gap-0.5 md:gap-1">
-            <a 
-              href="https://mymunus.com" 
-              target="_blank" 
+            <a
+              href="https://mymunus.com"
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 h-8 md:h-9 px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             >
               Munus
               <ExternalLink className="w-3 h-3 hidden sm:block" />
             </a>
-            <a 
-              href="https://ligala.law" 
-              target="_blank" 
+            <a
+              href="https://ligala.law"
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 h-8 md:h-9 px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             >
@@ -112,13 +136,13 @@ export default async function LandingPage() {
             </a>
           </nav>
           <div className="flex items-center gap-2 md:gap-3">
-            <Link 
+            <Link
               href="/auth/login"
               className="hidden sm:inline-flex items-center justify-center h-8 md:h-9 px-3 md:px-4 py-1.5 rounded-md text-xs md:text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               Sign In
             </Link>
-            <Link 
+            <Link
               href="/auth/sign-up"
               className="inline-flex items-center justify-center h-8 md:h-9 px-3 md:px-4 py-1.5 rounded-md text-xs md:text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
             >
@@ -134,14 +158,19 @@ export default async function LandingPage() {
           {/* AI Badge */}
           <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-green-500/30 bg-green-500/10 mb-8 md:mb-10">
             <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-400" />
-            <span className="text-xs md:text-sm font-medium text-green-400">AI-Powered Legal Library</span>
+            <span className="text-xs md:text-sm font-medium text-green-400">
+              AI-Powered Legal Library
+            </span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-5 md:mb-6 text-balance leading-tight">
             Master Philippine Criminal Law with CrimiKnow
           </h1>
           <p className="text-base md:text-xl text-white/60 mb-8 md:mb-12 max-w-2xl mx-auto text-pretty leading-relaxed px-2">
-            Get instant, accurate and reliable answers about crimes and penalties in the Philippines based on the Revised Penal Code, special penal laws, criminal procedures, administrative issuances, and court-decided cases or jurisprudence.
+            Get instant, accurate and reliable answers about crimes and
+            penalties in the Philippines based on the Revised Penal Code,
+            special penal laws, criminal procedures, administrative issuances,
+            and court-decided cases or jurisprudence.
           </p>
 
           {/* Search Bar */}
@@ -149,7 +178,10 @@ export default async function LandingPage() {
             <Link href="/auth/sign-up" className="block">
               <div className="flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl px-3 md:px-5 py-3 md:py-4 hover:bg-white/15 transition-colors cursor-pointer">
                 <Search className="w-4 h-4 md:w-5 md:h-5 text-green-400 shrink-0" />
-                <span className="text-white/40 text-sm md:text-base flex-1 text-left truncate">Ask about crimes, penalties, jurisprudence, or legal doctrines...</span>
+                <span className="text-white/40 text-sm md:text-base flex-1 text-left truncate">
+                  Ask about crimes, penalties, jurisprudence, or legal
+                  doctrines...
+                </span>
                 <div className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-lg bg-red-500 shrink-0">
                   <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
@@ -161,8 +193,8 @@ export default async function LandingPage() {
           <div className="flex items-center justify-center gap-2 md:gap-3 flex-wrap mb-10 md:mb-14">
             <span className="text-xs md:text-sm text-white/40">Try:</span>
             {suggestions.map((s) => (
-              <Link 
-                key={s} 
+              <Link
+                key={s}
                 href="/auth/sign-up"
                 className="inline-flex items-center px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-white/15 text-xs md:text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors"
               >
@@ -173,8 +205,15 @@ export default async function LandingPage() {
 
           {/* Data Provider Badge */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 pt-6 border-t border-white/10">
-            <span className="text-xs text-white/40 uppercase tracking-wider">Datasets curated by</span>
-            <a href="https://cdasia.com" target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform">
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Datasets curated by
+            </span>
+            <a
+              href="https://cdasia.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:scale-105 transition-transform"
+            >
               <CdAsiaLogo size="sm" />
             </a>
           </div>
@@ -188,19 +227,24 @@ export default async function LandingPage() {
             Why Choose CrimiKnow?
           </h2>
           <p className="text-sm md:text-base text-muted-foreground text-center mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed">
-            Built specifically for Philippine criminal law study, practice and enforcement with datasets curated and maintained by CD Asia.
+            Built specifically for Philippine criminal law study, practice and
+            enforcement with datasets curated and maintained by CD Asia.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature) => (
-              <div 
+              <div
                 key={feature.title}
                 className="bg-green-50 border border-green-200 rounded-xl p-6 hover:border-red-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-green-100 text-green-700 mb-4">
                   <feature.icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
@@ -214,19 +258,24 @@ export default async function LandingPage() {
             Who Is CrimiKnow For?
           </h2>
           <p className="text-sm md:text-base text-muted-foreground text-center mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed">
-            CrimiKnow assists professionals and students across the Philippine legal and law enforcement landscape.
+            CrimiKnow assists professionals and students across the Philippine
+            legal and law enforcement landscape.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {audiences.map((audience) => (
-              <div 
+              <div
                 key={audience.title}
                 className="bg-white border border-green-200 rounded-xl p-8 text-center hover:shadow-sm transition-all"
               >
                 <div className="flex items-center justify-center w-14 h-14 rounded-full bg-green-100 text-green-700 mx-auto mb-5">
                   <audience.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{audience.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{audience.description}</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {audience.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {audience.description}
+                </p>
               </div>
             ))}
           </div>
@@ -241,7 +290,7 @@ export default async function LandingPage() {
               {/* Photo */}
               <div className="relative p-4 sm:p-6 lg:p-8">
                 <div className="relative overflow-hidden rounded-lg md:rounded-xl lg:rounded-2xl aspect-[4/3] lg:aspect-[3/4] xl:aspect-[4/3]">
-                  <Image 
+                  <Image
                     src="/images/about-photo.jpg"
                     alt="Legal professional doing research on a laptop"
                     fill
@@ -253,15 +302,23 @@ export default async function LandingPage() {
               </div>
               {/* Content */}
               <div className="flex flex-col justify-center px-5 pb-8 sm:px-8 sm:pb-10 lg:px-10 lg:py-12 xl:px-14">
-                <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-3 md:mb-4">About CrimiKnow</p>
+                <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-3 md:mb-4">
+                  About CrimiKnow
+                </p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6 text-balance leading-tight">
                   Smart way to do your legal research
                 </h2>
                 <p className="text-sm sm:text-base text-white/80 leading-relaxed mb-6 md:mb-8">
-                  CrimiKnow is an AI-powered legal assistant tailored to Philippine criminal law, providing targeted support to both the Academe (law students, professors, bar reviewees/examiners) and Legal Professionals (lawyers, members of the judiciary, and relevant government agencies). We&apos;re committed to improving efficiency, accessibility, and accuracy in legal research and practice.
+                  CrimiKnow is an AI-powered legal assistant tailored to
+                  Philippine criminal law, providing targeted support to both
+                  the Academe (law students, professors, bar
+                  reviewees/examiners) and Legal Professionals (lawyers, members
+                  of the judiciary, and relevant government agencies).
+                  We&apos;re committed to improving efficiency, accessibility,
+                  and accuracy in legal research and practice.
                 </p>
                 <div>
-                  <Link 
+                  <Link
                     href="/auth/sign-up"
                     className="inline-flex items-center justify-center h-10 md:h-11 px-6 md:px-8 py-2 rounded-lg text-sm font-semibold bg-white text-red-500 hover:bg-white/90 transition-colors cursor-pointer"
                   >
@@ -281,15 +338,17 @@ export default async function LandingPage() {
             Simple, Transparent Pricing
           </h2>
           <p className="text-sm md:text-base text-muted-foreground text-center mb-8 md:mb-12 max-w-2xl mx-auto">
-            Choose the plan that fits your needs. All plans include access to our AI-powered 
-            Philippine criminal law library.
+            Choose the plan that fits your needs. All plans include access to
+            our AI-powered Philippine criminal law library.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5">
             {pricingPlans.map((plan) => (
-              <div 
+              <div
                 key={plan.name}
                 className={`bg-white border rounded-xl p-5 relative flex flex-col ${
-                  plan.popular ? 'border-red-400 shadow-lg ring-1 ring-red-400' : 'border-green-200'
+                  plan.popular
+                    ? "border-red-400 shadow-lg ring-1 ring-red-400"
+                    : "border-green-200"
                 }`}
               >
                 {plan.popular && (
@@ -299,28 +358,39 @@ export default async function LandingPage() {
                     </span>
                   </div>
                 )}
-                <h3 className="text-xl font-semibold text-foreground mb-2">{plan.name}</h3>
-                <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">{plan.description}</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {plan.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">
+                  {plan.description}
+                </p>
                 <div className="mb-6">
                   <div className="flex items-baseline gap-1 flex-wrap">
-                    <span className="text-3xl font-bold text-foreground whitespace-nowrap">{plan.price === '0' ? 'FREE' : `PHP ${plan.price}`}</span>
-                    <span className="text-sm text-muted-foreground">{plan.price !== '0' && plan.duration}</span>
+                    <span className="text-3xl font-bold text-foreground whitespace-nowrap">
+                      {plan.price === "0" ? "FREE" : `PHP ${plan.price}`}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {plan.price !== "0" && plan.duration}
+                    </span>
                   </div>
                 </div>
                 <ul className="space-y-2 mb-6 flex-1">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
+                    <li
+                      key={feature}
+                      className="flex items-start gap-2 text-sm"
+                    >
                       <Check className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
                       <span className="text-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <Link 
+                <Link
                   href={plan.href}
                   className={`w-full inline-flex items-center justify-center h-10 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                    plan.popular 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-[#01263a] hover:bg-[#03344d] text-white'
+                    plan.popular
+                      ? "bg-red-500 hover:bg-red-600 text-white"
+                      : "bg-[#01263a] hover:bg-[#03344d] text-white"
                   }`}
                 >
                   {plan.cta}
@@ -338,10 +408,10 @@ export default async function LandingPage() {
             Ready to Get Started?
           </h2>
           <p className="text-sm md:text-base text-white/60 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of law students and practitioners who use CrimiKnow 
+            Join thousands of law students and practitioners who use CrimiKnow
             to navigate the Philippine criminal law landscape.
           </p>
-          <Link 
+          <Link
             href="/auth/sign-up"
             className="inline-flex items-center justify-center h-11 px-8 py-2 rounded-md text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
           >
@@ -358,30 +428,56 @@ export default async function LandingPage() {
             <div className="flex flex-col gap-3">
               <CrimiKnowLogo size="sm" />
               <p className="text-sm text-muted-foreground max-w-xs">
-                AI-powered library for Philippine criminal law. For educational and reference purposes only.
+                AI-powered library for Philippine criminal law. For educational
+                and reference purposes only.
               </p>
             </div>
             {/* Links */}
             <div className="flex flex-col gap-2">
-              <h4 className="text-sm font-semibold text-foreground mb-1">Ecosystem</h4>
-              <a href="https://mymunus.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
+              <h4 className="text-sm font-semibold text-foreground mb-1">
+                Ecosystem
+              </h4>
+              <a
+                href="https://mymunus.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              >
                 Munus <ExternalLink className="w-3 h-3" />
               </a>
-              <a href="https://ligala.law" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
+              <a
+                href="https://ligala.law"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              >
                 Ligala <ExternalLink className="w-3 h-3" />
               </a>
-              <Link href="/auth/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="/auth/login"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Sign In
               </Link>
-              <Link href="/auth/sign-up" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="/auth/sign-up"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Create Account
               </Link>
             </div>
             {/* Partners */}
             <div className="flex flex-col gap-3">
-              <h4 className="text-sm font-semibold text-foreground mb-1">Data Provider</h4>
-              <a href="https://cdasia.com" target="_blank" rel="noopener noreferrer" className="inline-block">
-                <CdAsiaLogo size="xs" />
+              <h4 className="text-sm font-semibold text-foreground mb-1">
+                Data Provider
+              </h4>
+              <a
+                href="https://cdasia.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block"
+              >
+                <CdAsiaLogo size="lg" />
               </a>
               <p className="text-xs text-muted-foreground">
                 All legal datasets are curated and maintained by CD Asia.
@@ -400,5 +496,5 @@ export default async function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
