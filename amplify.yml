@@ -4,34 +4,39 @@ frontend:
     preBuild:
       commands:
         - npm ci
-        # Map Amplify Environment Variables to a physical .env file
-        - echo "AZURE_BLOB_URL_C1=$AZURE_BLOB_URL_C1" >> .env.production
-        - echo "AZURE_BLOB_URL_C2=$AZURE_BLOB_URL_C2" >> .env.production
-        - echo "AZURE_BLOB_URL_CB=$AZURE_BLOB_URL_CB" >> .env.production
-        - echo "AZURE_BLOB_URL_CI=$AZURE_BLOB_URL_CI" >> .env.production
-        - echo "AZURE_SEARCH_API_KEY=$AZURE_SEARCH_API_KEY" >> .env.production
-        - echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> .env.production
-        - echo "NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=$NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL" >> .env.production
-        - echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> .env.production
-        - echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" >> .env.production
-        - echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> .env.production
-        - echo "PAYPAL_CLIENT_ID=$PAYPAL_CLIENT_ID" >> .env.production
-        - echo "PAYPAL_CLIENT_SECRET=$PAYPAL_CLIENT_SECRET" >> .env.production
-        - echo "PAYPAL_MODE=$PAYPAL_MODE" >> .env.production
-        - echo "POSTGRES_DATABASE=$POSTGRES_DATABASE" >> .env.production
-        - echo "POSTGRES_HOST=$POSTGRES_HOST" >> .env.production
-        - echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env.production
-        - echo "POSTGRES_PRISMA_URL=$POSTGRES_PRISMA_URL" >> .env.production
-        - echo "POSTGRES_URL=$POSTGRES_URL" >> .env.production
-        - echo "POSTGRES_URL_NON_POOLING=$POSTGRES_URL_NON_POOLING" >> .env.production
-        - echo "POSTGRES_USER=$POSTGRES_USER" >> .env.production
-        - echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env.production
-        - echo "SUPABASE_JWT_SECRET=$SUPABASE_JWT_SECRET" >> .env.production
-        - echo "SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY" >> .env.production
-        - echo "SUPABASE_SECRET_KEY=$SUPABASE_SECRET_KEY" >> .env.production
-        - echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> .env.production
-        - echo "SUPABASE_URL=$SUPABASE_URL" >> .env.production
-        - echo "AI_GATEWAY_API_KEY=$AI_GATEWAY_API_KEY" >> .env.production
+        # Use a heredoc to create the .env file safely with all variables
+        - |
+          cat <<EOF > .env.production
+          AZURE_BLOB_URL_C1="$AZURE_BLOB_URL_C1"
+          AZURE_BLOB_URL_C2="$AZURE_BLOB_URL_C2"
+          AZURE_BLOB_URL_CB="$AZURE_BLOB_URL_CB"
+          AZURE_BLOB_URL_CI="$AZURE_BLOB_URL_CI"
+          AZURE_SEARCH_API_KEY="$AZURE_SEARCH_API_KEY"
+          AZURE_SEARCH_ENDPOINT="$AZURE_SEARCH_ENDPOINT"
+          NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL="$NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+          NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL"
+          PAYPAL_CLIENT_ID="$PAYPAL_CLIENT_ID"
+          PAYPAL_CLIENT_SECRET="$PAYPAL_CLIENT_SECRET"
+          PAYPAL_MODE="$PAYPAL_MODE"
+          POSTGRES_DATABASE="$POSTGRES_DATABASE"
+          POSTGRES_HOST="$POSTGRES_HOST"
+          POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
+          POSTGRES_PRISMA_URL="$POSTGRES_PRISMA_URL"
+          POSTGRES_URL="$POSTGRES_URL"
+          POSTGRES_URL_NON_POOLING="$POSTGRES_URL_NON_POOLING"
+          POSTGRES_USER="$POSTGRES_USER"
+          SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
+          SUPABASE_JWT_SECRET="$SUPABASE_JWT_SECRET"
+          SUPABASE_PUBLISHABLE_KEY="$SUPABASE_PUBLISHABLE_KEY"
+          SUPABASE_SECRET_KEY="$SUPABASE_SECRET_KEY"
+          SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY"
+          SUPABASE_URL="$SUPABASE_URL"
+          AI_GATEWAY_API_KEY="$AI_GATEWAY_API_KEY"
+          EOF
+        # Verification: Check if the file was created (wont show values for security)
+        - ls -la .env.production
     build:
       commands:
         - npm run build
