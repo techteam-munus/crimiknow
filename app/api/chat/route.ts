@@ -1075,18 +1075,18 @@ ${retrievedDocs}
         .join("\n");
     };
 
-    // Stream the AI SDK response to the client
+    // Stream using TransformStream with pipeThrough for proper streaming
+    // This avoids blocking in start() which causes AWS Gateway timeouts
     const encoder = new TextEncoder();
     let fullContent = "";
 
-    const readable = new ReadableStream({
-      async start(controller) {
+    const transform = new TransformStream<string, Uint8Array>({
+      transform(chunk, controller) {
+        fullContent += chunk;
+        controller.enqueue(encoder.encode(chunk));
+      },
+      async flush(controller) {
         try {
-          for await (const chunk of result.textStream) {
-            fullContent += chunk;
-            controller.enqueue(encoder.encode(chunk));
-          }
-
           // Post-process citations
           const processedContent = addCitationLinks(
             fullContent,
@@ -1122,13 +1122,14 @@ ${retrievedDocs}
           controller.enqueue(
             encoder.encode(`\n\n__CRIMIKNOW_STREAM_END__\n${meta}`),
           );
-          controller.close();
         } catch (err) {
-          console.error("[AI SDK Stream Error]", err);
-          controller.close();
+          console.error("[AI SDK Stream Flush Error]", err);
         }
       },
     });
+
+    // Pipe the AI SDK stream through our transform - chunks flow immediately
+    const readable = result.textStream.pipeThrough(transform);
 
     return new Response(readable, {
       headers: {

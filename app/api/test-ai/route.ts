@@ -1,6 +1,6 @@
 // app/api/test-ai/route.ts
 export async function GET() {
-  const ACTUAL_URL = "https://ai-gateway.vercel.sh/v1/responses";
+  const ACTUAL_URL = "https://ai-gateway.vercel.sh/v1/chat/completions";
 
   try {
     const response = await fetch(ACTUAL_URL, {
