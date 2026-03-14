@@ -1,7 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 
 export const maxDuration = 60
+
+const aiGateway = createOpenAICompatible({
+  name: 'ai-gateway',
+  baseURL: 'https://ai-gateway.vercel.sh/v1',
+  headers: {
+    Authorization: `Bearer ${process.env.AI_GATEWAY_API_KEY}`,
+  },
+})
 
 // Admin client to bypass RLS for saving chat history
 const supabaseAdmin = createSupabaseClient(
@@ -583,7 +592,7 @@ export async function POST(req: Request) {
     const userQuestion = messages.filter(m => m.role === 'user').pop()?.content || ''
 
     const result = streamText({
-      model: activeModel,
+      model: aiGateway(activeModel),
       system: sysPrompt + `\n\nCRITICAL RULES FOR CITATIONS AND SOURCES:
 1. You may ONLY reference information that appears in the RETRIEVED DOCUMENTS below. Do NOT use your training data or general knowledge to add cases, G.R. numbers, dates, or legal citations that are not explicitly present in the retrieved documents.
 2. When a case name (e.g., "People v. Bariquit") is merely MENTIONED or CITED within a document about a DIFFERENT case, you must NOT present it as if you have the full text of that case. Instead, say something like "as cited in [Document Name]" to make it clear the information comes secondhand.
