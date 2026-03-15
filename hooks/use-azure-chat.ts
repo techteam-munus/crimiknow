@@ -20,6 +20,7 @@ interface UseAzureChatOptions {
 }
 
 const STREAM_END_DELIMITER = '__CRIMIKNOW_STREAM_END__'
+const STREAM_ERROR_DELIMITER = '__CRIMIKNOW_ERROR__'
 
 export function useAzureChat(options: UseAzureChatOptions = {}) {
   const { api = '/api/chat', sessionId: initialSessionId, onError, onResponse, onSessionCreated, onFinish } = options
@@ -110,6 +111,22 @@ export function useAzureChat(options: UseAzureChatOptions = {}) {
           const chunk = decoder.decode(value, { stream: true })
           accumulated += chunk
 
+          // Check for error marker first (streaming error from server)
+          const errorIdx = accumulated.indexOf(STREAM_ERROR_DELIMITER)
+          if (errorIdx !== -1) {
+            const errorStr = accumulated.substring(errorIdx + STREAM_ERROR_DELIMITER.length).trim()
+            try {
+              const errorData = JSON.parse(errorStr)
+              throw new Error(JSON.stringify(errorData))
+            } catch (e) {
+              if (e instanceof SyntaxError) {
+                // Error JSON split across chunks -- keep reading
+                continue
+              }
+              throw e
+            }
+          }
+
           const delimiterIdx = accumulated.indexOf(STREAM_END_DELIMITER)
           if (delimiterIdx !== -1) {
             const displayText = accumulated.substring(0, delimiterIdx).trimEnd()
@@ -126,9 +143,10 @@ export function useAzureChat(options: UseAzureChatOptions = {}) {
             break
           }
 
-          // Real-time display update
+          // Real-time display update (filter out empty heartbeat)
+          const displayContent = accumulated.trimStart()
           setMessages(prev => prev.map(m =>
-            m.id === assistantPlaceholderId ? { ...m, content: accumulated } : m
+            m.id === assistantPlaceholderId ? { ...m, content: displayContent } : m
           ))
         }
 
@@ -141,7 +159,7 @@ export function useAzureChat(options: UseAzureChatOptions = {}) {
 
           const metaContent = meta.content as string | undefined
           const delimiterIdx = accumulated.indexOf(STREAM_END_DELIMITER)
-          const rawText = delimiterIdx !== -1 ? accumulated.substring(0, delimiterIdx).trimEnd() : accumulated
+          const rawText = delimiterIdx !== -1 ? accumulated.substring(0, delimiterIdx).trim() : accumulated.trim()
           const finalContent = (metaContent && metaContent.length > 0) ? metaContent : rawText
 
           setMessages(prev => prev.map(m => {
