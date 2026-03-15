@@ -1,4 +1,5 @@
-export const runtime = "edge";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
@@ -6,14 +7,6 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText } from "ai";
 
 export const maxDuration = 120;
-
-const aiGateway = createOpenAICompatible({
-  name: "ai-gateway",
-  baseURL: "https://ai-gateway.vercel.sh/v1",
-  headers: {
-    Authorization: `Bearer ${process.env.AI_GATEWAY_API_KEY}`,
-  },
-});
 
 const supabaseAdmin = createSupabaseClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,6 +27,14 @@ interface ChatMessage {
 
 export async function POST(req: Request) {
   const encoder = new TextEncoder();
+
+  const aiGateway = createOpenAICompatible({
+    name: "ai-gateway",
+    baseURL: "https://ai-gateway.vercel.sh/v1",
+    headers: {
+      Authorization: `Bearer ${process.env.AI_GATEWAY_API_KEY}`,
+    },
+  });
 
   // Parse request body BEFORE creating stream (can't access req.json() inside stream)
   const body = await req.json();
