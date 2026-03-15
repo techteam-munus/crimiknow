@@ -3,6 +3,7 @@ export const runtime = "edge";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { streamText } from "ai";
 
 export const maxDuration = 120;
 
@@ -532,7 +533,6 @@ export async function POST(req: Request) {
         }
 
         // Generate AI response
-        const { streamText } = await import("ai");
 
         const result = streamText({
           model: aiGateway(activeModel),
